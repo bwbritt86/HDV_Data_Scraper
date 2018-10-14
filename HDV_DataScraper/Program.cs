@@ -13,20 +13,17 @@ namespace HDV_DataScraper
 {
     class Program
     {
-        //Use excel application object
-        //static Excel.Application xlApp = new Excel.Application();
-
         static void Main(string[] args)
         {
             year2009();
-            year2010();
+            /*year2010();
             year2011();
             year2012();
             year2013();
             year2014();
             year2015();
             year2016();
-            year2017();
+            year2017();*/
         }
 
         static void year2009()
