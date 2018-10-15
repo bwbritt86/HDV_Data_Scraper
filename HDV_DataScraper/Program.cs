@@ -29,13 +29,13 @@ namespace HDV_DataScraper
         static void year2009()
         {
             Excel.Application JunXlApp = new Excel.Application();
-            Excel.Workbook JunXlWkBk = JunXlApp.Workbooks.Open(@"http://www.houstontx.gov/police/cs/xls/jun09.xls");
+            Excel.Workbook JunXlWkBk = JunXlApp.Workbooks.Open(@"C:\Users\nikaido\Documents\College\Senior Project\Crime Stats\jun09.xls");
             Excel._Worksheet JunXlWorksheet = JunXlWkBk.Sheets[1];
             Excel.Range JunXlRange = JunXlWorksheet.UsedRange;
             String JunTblName = "June_2009";
             insertIntoDB(JunXlApp, JunXlWkBk, JunXlWorksheet, JunXlRange, JunTblName);
 
-            Excel.Application JulXlApp = new Excel.Application();
+            /*Excel.Application JulXlApp = new Excel.Application();
             Excel.Workbook JulXlWkBk = JulXlApp.Workbooks.Open(@"http://www.houstontx.gov/police/cs/xls/jul09.xls");
             Excel._Worksheet JulXlWorksheet = JulXlWkBk.Sheets[1];
             Excel.Range JulXlRange = JulXlWorksheet.UsedRange;
@@ -75,7 +75,7 @@ namespace HDV_DataScraper
             Excel._Worksheet DecXlWorksheet = DecXlWkBk.Sheets[1];
             Excel.Range DecXlRange = DecXlWorksheet.UsedRange;
             String DecTblName = "December_2009";
-            insertIntoDB(DecXlApp, DecXlWkBk, DecXlWorksheet, DecXlRange, DecTblName);
+            insertIntoDB(DecXlApp, DecXlWkBk, DecXlWorksheet, DecXlRange, DecTblName);*/
         }
 
         static void year2010()
@@ -804,51 +804,57 @@ namespace HDV_DataScraper
                 //Declare row and column counts
                 int rowCount = xlRange.Rows.Count;
                 int colCount = xlRange.Columns.Count;
+                int rowCounter = 0;
                 int unkCount = 0;
+                int counter = 0;
 
-                //for loop that reads data sets
+                //Begin looping through rows
                 for (int i = 2; i <= rowCount; i++)
                 {
+                    //Declare variables for Excel Data
                     String offense = null;
                     String block = null;
                     String streetAddr = null;
                     String type = null;
                     String suffix = null;
 
+                    //Begin looping through columns
                     for (int j = 1; j <= colCount; j++)
                     {
+                        //Check if data in the cells
                         if (xlRange.Cells[i, j] != null && xlRange.Cells[i, j].Value2 != null)
                         {
-                            if (j == 3)
-                                offense = xlRange.Cells[i, j].Value2.toString();
-                            else if (j == 6)
+                            if (j == 4)
+                                offense = (String)xlRange.Cells[i, j].Value2;
+                            else if (j == 7)
                             {
-                                if (xlRange.Cells[i, j].Value2.toString() == "unk")
+                                if ((String)xlRange.Cells[i, j].Value2 == "unk")
                                 {
                                     unkCount++;
-                                    break; //break loop if block number is unknown (row does not get added to database)
+                                    break; //break loop if block number is unknown (row does not get inerted into database)
                                 }
                                 else
-                                    block = xlRange.Cells[i, j].Value2.toString();
+                                    block = (String)xlRange.Cells[i, j].Value2;
                             }
-                            else if (j == 7)
-                                streetAddr = xlRange.Cells[i, j].Value2.toString();
                             else if (j == 8)
-                            {
-                                if (xlRange.Cells[i, j].Value2.toString() == "-")
-                                    type = "";
-                                else
-                                    type = xlRange.Cells[i, j].Value2.toString();
-                            }
+                                streetAddr = (String)xlRange.Cells[i, j].Value2;
                             else if (j == 9)
                             {
-                                if (xlRange.Cells[i, j].Value2.toString() == "-")
+                                if ((String)xlRange.Cells[i, j].Value2 == "-")
+                                    type = "";
+                                else
+                                    type = (String)xlRange.Cells[i, j].Value2;
+                            }
+                            else if (j == 10)
+                            {
+                                if ((String)xlRange.Cells[i, j].Value2 == "-")
                                     suffix = "";
                                 else
-                                    suffix = xlRange.Cells[i, j].Value2.toString();
+                                    suffix = (String)xlRange.Cells[i, j].Value2;
                             }
                         }
-
+                        counter++;
+                        Console.WriteLine("counter =" + counter);
                     }
 
                     //Show the amount of rows skipped
@@ -873,6 +879,14 @@ namespace HDV_DataScraper
                             conn.Close();
                         }
                     }
+                    else if (offense == "" && block == "" && streetAddr == "" && type == "" && suffix == "")
+                    {
+                        Console.WriteLine("\nFinished populating [" + tblName + "]");
+                        break;
+                    }
+
+                    rowCounter++;
+                    Console.WriteLine("Row = " + rowCounter);
                 }
     
             }
